@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouvelle dépense enregistrée</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+  <style>
+    .table {
+      display: table;
+      border: 1px Solid black;
+    }
+
+    .row {
+      display: table-row;
+    }
+
+    .cell {
+      display: table-cell;
+      border: 1px Solid black;
+    }
+  </style>
+
+  <script>
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  {{> siteHeader }}
+
+  <br><br><br><br>
+  Dépense ajoutée!<br />
+  <br />
+  Description: {{{addedExpense.expenseDesc}}}<br>
+  Date: {{{addedExpense.expenseDate}}}<br>
+  Montant: {{{addedExpense.expenseAmount}}}<br>
+  TPS: {{{addedExpense.expenseGST}}}<br>
+  TVQ: {{{addedExpense.expensePST}}}<br>
+  <br />
+  <form action="/newexpense" method="GET">
+    <input type="submit" value="Entrer une nouvelle dépense">
+  </form>
+</body>
+
+</html>

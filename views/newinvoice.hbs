@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouvelle facture</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+
+  <script>
+    // Ajout d'un 0 pour les nombre < 10
+    function addDigit(number) {
+      console.log("num: " + number)
+      if (parseInt(number) < 10) {
+        return "0" + parseInt(number)
+      } else {
+        return parseInt(number).toString() //Doit peut-être enlever le parseInt (ajouté à cause erreur!)
+      }
+    }
+
+    
+    // Vérifie que tous les champs requis sont remplis
+    function validateForm() {
+      //alert("Test")
+      var formIsOk = true
+      if (document.getElementById("cNumber").value == "000") formIsOk = false
+      if (document.getElementById("invoiceNumber").value == "") formIsOk = false
+      if (document.getElementById("invoiceTerm").value == "") formIsOk = false
+      if (document.getElementById("dateDay").value == "") formIsOk = false
+      if (document.getElementById("dateMonth").value == "") formIsOk = false
+      if (document.getElementById("dateYear").value == "") formIsOk = false
+      if (document.getElementById("amountPaid").value == "") formIsOk = false
+
+      if (formIsOk) {
+        newbill.clientNumber.value = document.getElementById("cNumber").value
+        newbill.invoiceDate.value = addDigit(newbill.dateYear.value) + "/" + addDigit(newbill.dateMonth.value) + "/" + newbill.dateDay.value
+        alert("Formulaire accepté")
+        newbill.submit()
+      } else {
+        alert("Erreur dans le formulaire!")
+      }
+
+      //alert(document.getElementById("clientNumber").value + " " + newbill.invoiceNumber.value + " " + newbill.invoiceTerm.value + " " + newbill.invoiceDate.value)
+    }
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  <br />
+  Nouvelle facture<br />
+  <br />
+
+  {{{ clientSelector clientsList }}}
+
+  <form action="/newinvoice" name="newbill" method="post">
+    <input type="hidden" name="clientNumber" id="clientNumber" value="">
+    <input type="hidden" name="invoiceDate" id="invoiceDate" value="">
+    <input type="hidden" name="invoiceID" id="invoiceID" value="{{invoiceID}}">
+    Numéro: <input type="text" name="invoiceNumber" id="invoiceNumber" size="5" value="{{{newInvoiceNumber}}}"><br>
+    Terme: <input type="text" name="invoiceTerm" id="invoiceTerm" size="1" value="7"><br>
+    Date: <input type="text" name="dateDay" id="dateDay" size="1" value="{{curDay}}"> <input type="text"
+      name="dateMonth" id="dateMonth" size="1" value="{{curMonth}}">
+    <input type="text" name="dateYear" id="dateYear" size="1" value="{{curYear}}"><br>
+    Payé: <input type="text" name="amountPaid" id="amountPaid" size="1" value="0"><br>
+    <br>
+    <input type="button" value="Envoyer" onclick="validateForm()">
+  </form>
+</body>
+
+</html>

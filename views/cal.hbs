@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Some website</title>
+</head>
+
+<body>
+
+  <style>
+    a {
+      text-decoration: none;
+    }
+
+    .calendarSkin {
+      border-top: 1px Solid Black;
+      border-right: 1px Solid Black;
+      border-left: 1px Solid Black;
+      border-bottom: 1px Solid Black;
+      border-radius: 25px;
+      -webkit-border-radius: 20px;
+      -moz-border-radius: 20px;
+      border-radius: 20px;
+      width: 356px;
+      overflow: hidden;
+    }
+
+    .calendarHeader {
+      text-align: center;
+      height: 25px;
+      font-size: 20px;
+      //border-left: 1px Solid Black;
+      //border-top: 1px Solid Black;
+    }
+
+    .boxes {}
+
+    .daysTitle {
+      margin: 0px;
+      padding: 0px;
+      font-size: 18px;
+      text-align: center;
+      border-right: 1px Solid Black;
+      border-top: 1px Solid Black;
+      width: 50px;
+      height: 50px;
+      display: table-cell;
+      vertical-align: middle;
+      overflow: hidden;
+    }
+
+    .days {
+      margin: 0px;
+      padding: 0px;
+      font-size: 18px;
+      text-align: center;
+      border-right: 1px Solid Black;
+      border-top: 1px Solid Black;
+      width: 50px;
+      height: 50px;
+      display: table-cell;
+      vertical-align: middle;
+      overflow: hidden;
+    }
+
+    .days:hover {
+      background-color: rgb(115, 228, 115);
+    }
+
+    .eventDays {
+      background-color: yellow;
+    }
+
+    .today {
+      font-size: 30px;
+    }
+
+    .week {
+      font-size: 0;
+    }
+
+    .eventBox {
+      width: 400px;
+      //height: 200px;
+      border: 1px Solid Black;
+      visibility: hidden;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      //margin-left: -200px;
+      //margin-top: -100px;
+      opacity: 1.0;
+      background-color: white;
+      transform: translate(-50%, -50%);
+    }
+
+    span {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  </style>
+  <script>
+    const MONTHS = ["Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre", "Décembre"]
+    const DAYS = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"]
+
+    function getFirstCell(year, month) {
+      var monthsFirstDay = new Date(year, month - 1, 1)
+      var fisrtCell = new Date(year, month - 1, monthsFirstDay.getDate() - monthsFirstDay.getDay())
+
+      if (fisrtCell.getDate() === 1) {
+        var exception = new Date(year, month - 1, monthsFirstDay.getDate() - 7)
+        return exception.getDate()
+      }
+
+      return fisrtCell.getDate()
+    }
+
+    function getLastDay(year, month) {
+      var lastDay = new Date(year, month - 1, 0)
+      return lastDay.getDate()
+    }
+
+
+  </script>
+
+  <script>
+    function drawHeader() {
+      document.writeln("<div id='calendar' class='calendarSkin'>")
+      document.writeln("<div id='headerBox' class='calendarHeader' style='display: table; width: 100%;'>")
+      document.writeln("<div id='prevMonth' style='display:none'>000000</div>")
+      document.writeln("<div id='prevButton' style='padding-left: 8px; text-align: left; float: left; width: 15%;'><a href='javascript:prevMonthClick()'><b><</b></a></div>")
+      document.writeln("<div id='monthTitle' style='text-align: center; float: left; width: 60%;'></div>")
+      document.writeln("<div id='nextMonth' style='display:none'>000000</div>")
+      document.writeln("<div id='nextButton' style='padding-right: 8px; text-align: right; float: right; width: 15%;'><a href='javascript:nextMonthClick()'><b>></b></a></div>")
+      document.writeln("</div>")
+      document.writeln("<div id='header' class='week'>")
+
+      for (index = 0; index < 7; ++index) {
+        document.writeln("<div id='dayTitle[" + index + "]' class='daysTitle'>" + DAYS[index] + "</div>")
+      }
+      document.writeln("</div>")
+      document.getElementById("dayTitle[6]").style.borderRight = "0px"
+    }
+
+    function addDigit(number) {
+      if (number < 10) {
+        return "0" + number
+      } else {
+        return number.toString()
+      }
+    }
+
+    function addClass(divTag, classToAdd) {
+      //Work-around for IE9 that doesn't support classList
+      var element, name, arr;
+      element = document.getElementById(divTag);
+      name = classToAdd;
+      arr = element.className.split(" ");
+      if (arr.indexOf(name) == -1) {
+        element.className += " " + name;
+      }
+    }
+
+    function drawGrid() {
+      var weekCounter = 0
+      document.writeln("<div id='week[0]' class='week'>")
+      for (index = 0; index <= 41; ++index) {
+        if (index % 7 === 0) {
+          document.writeln("</div><div id='week[" + weekCounter + "]' class='week'>")
+          weekCounter++
+        }
+        //        if ( (index + 1) % 7 === 0) {
+        //         document.writeln("</div><div id='week[" + weekCounter + "]' class='week'>")
+        //          weekCounter++
+        //        }
+        document.writeln("<div id='day[" + index + "]' class='days'></div>")
+      }
+      document.writeln("</div></div>")
+      for (cpt = 6; cpt <= 41; cpt += 7) {
+        document.getElementById("day[" + cpt + "]").style.borderRight = "0px"
+      }
+    }
+
+    function concatDate(year, month, day) {
+      return year.toString() + addDigit(month.toString()) + addDigit(day.toString())
+    }
+
+    function shortDate(dateObj) {
+      var curDate = new Date(dateObj)
+      var gmtDate = new Date(dateObj)
+      //alert(curDate)
+      //alert("SH: " + dateObj)
+      var local = curDate.getTimezoneOffset()
+      //alert(local)
+      gmtDate.setTime(curDate.getTime() + (local * 60 * 1000));
+      var result = gmtDate.getFullYear() + addDigit(gmtDate.getMonth() + 1) + addDigit(gmtDate.getDate())
+      //alert(result)
+      return result
+    }
+
+    function datetimeToText(dateObj) {
+      //alert("DTT: " + dateObj)
+      var gmtDate = new Date(dateObj)
+      var local = dateObj.getTimezoneOffset()
+      gmtDate.setTime(dateObj.getTime() + (local * 60 * 1000));
+      var result = addDigit(gmtDate.getDate()) + " " + MONTHS[gmtDate.getMonth()] + " " + gmtDate.getFullYear() + " " + addDigit(gmtDate.getHours()) + ":" + addDigit(gmtDate.getMinutes())
+      return result
+    }
+
+    function loadEvents(year, month) {
+      var theList = new Array()
+      //alert(fromDate + " " + toDate)
+
+      var fromDate = concatDate(year, month - 1, 15)
+      var toDate = concatDate(year, month + 1, 15)
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var valResponse = JSON.parse(this.responseText)
+          //var eventStart = new Date(valResponse[pageNumber].beginDate)
+          //var eventEnd = new Date(valResponse[pageNumber].endDate)
+
+          for (index = 0; index < valResponse.length; ++index) {
+            //alert(valResponse[index].beginDate)
+            theList[index] = shortDate(valResponse[index].beginDate)
+            //alert(theList[index])
+          }
+          //return theList
+          var counter = getFirstCell(year, month)
+          var curMonth = undefined
+          var events = ["20190428", "20190501", "20190504", "20190507", "20190510", "20190516", "20190520", "20190523", "20190529", "20190603"]
+          curMonth = (counter != 1) ? month - 1 : month + 1
+
+          for (index = 0; index <= 41; ++index) {
+            document.getElementById("day[" + index + "]").className = "days"
+            document.getElementById("day[" + index + "]").innerHTML = counter
+
+            if (theList.includes(concatDate(year, curMonth, counter))) {
+              addClass("day[" + index + "]", "eventDays")
+              document.getElementById("day[" + index + "]").setAttribute('onclick', "showEvent('" + concatDate(year, curMonth, counter) + "', 0)")
+            }
+
+            var today = new Date()
+            if (concatDate(today.getFullYear(), today.getMonth() + 1, today.getDate()) === concatDate(year, curMonth, counter)) {
+              addClass("day[" + index + "]", "today")
+            }
+
+
+            counter++
+
+            if (counter > getLastDay(year, month) && index < 15) {
+              counter = 1
+              curMonth = month
+            }
+            if (counter > getLastDay(year, month + 1) && index > 28) {
+              counter = 1
+              curMonth = month + 1
+            }
+          }
+
+        }
+        //alert(theList)
+
+      };
+
+      xhttp.open("POST", "/eventdates")
+      xhttp.setRequestHeader("Content-Type", "application/json")
+      xhttp.send(JSON.stringify({ startDate: fromDate, endDate: toDate }))
+    }
+
+    /*function textToDatetime(theDate) {
+      var year = theDate.substr(0, 4)
+      var month = theDate.substr(4, 2)
+      var day = theDate.substr(6, 2)
+
+      var result = year, month, day )
+    }*/
+
+    function showEvent(dateValue, pageNumber) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function () {
+        if (this.readyState == 4 && this.status == 200) {
+          var valResponse = JSON.parse(this.responseText)
+          var multiplePages = (valResponse.length > 1) ? true : false
+          var eventStart = new Date(valResponse[pageNumber].beginDate)
+          var eventEnd = new Date(valResponse[pageNumber].endDate)
+          document.getElementById("eventTitle").innerHTML = valResponse[pageNumber].title
+          document.getElementById("eventFrom").innerHTML = datetimeToText(eventStart)
+          document.getElementById("eventTo").innerHTML = datetimeToText(eventEnd)
+          document.getElementById("eventDesc").innerHTML = valResponse[pageNumber].description
+          if (multiplePages) {
+            prevPage = (pageNumber <= 0) ? 0 : pageNumber - 1
+            nextPage = (pageNumber >= valResponse.length - 1) ? valResponse.length : pageNumber + 1
+            document.getElementById("pagesCount").innerHTML = "Événement " + (pageNumber + 1) + " de " + valResponse.length
+            document.getElementById("pagechanger").style.visibility = "visible"
+            document.getElementById("prevpage").href = "javascript:showEvent('" + dateValue + "', " + prevPage + ")"
+            document.getElementById("nextpage").href = "javascript:showEvent('" + dateValue + "', " + nextPage + ")"
+          } else {
+            document.getElementById("pagechanger").style.visibility = "hidden"
+          }
+          document.getElementById("eventViewer").style.visibility = "visible"
+        }
+      };
+
+      xhttp.open("POST", "/getevent")
+      xhttp.setRequestHeader("Content-Type", "application/json")
+      xhttp.send(JSON.stringify({ eventDate: dateValue }))
+    }
+
+    function showEvent2() {
+      var request = new XMLHttpRequest()
+      request.open("POST", "/getevent")
+      request.setRequestHeader("Content-type", "application/json");
+      request.send(JSON.stringify({ eventDate: '20190516' }))
+    }
+
+    function hideEvent() {
+      document.getElementById("eventViewer").style.visibility = "hidden"
+      document.getElementById("pagechanger").style.visibility = "hidden"
+    }
+
+    function fillGrid(year, month) {
+      //var today = new Date()
+      //alert(month)
+      if (month === 99) {
+        month = 12
+        year--
+      }
+      if (year === 0) {
+        var theMonth = new Date()
+        year = theMonth.getFullYear()
+      }
+
+      if (month === 0) {
+        var theMonth = new Date()
+        month = theMonth.getMonth() + 1
+      }
+      /*
+      var counter = getFirstCell(year, month)
+      var curMonth = undefined
+      var events = ["20190428", "20190501", "20190504", "20190507", "20190510", "20190516", "20190520", "20190523", "20190529", "20190603"]
+
+      curMonth = (counter != 1) ? month - 1 : month + 1
+      */
+      //alert(loadEvents(concatDate(year, month - 1, 15), concatDate(year, month + 1, 15)))
+      //var theList = new Array()
+      //theList = loadEvents(concatDate(year, month - 1, 15), concatDate(year, month + 1, 15))
+      //alert(theList)
+
+
+      document.getElementById("monthTitle").innerHTML = MONTHS[month - 1] + " " + year
+      if (month - 1 === 0) {
+        document.getElementById("prevMonth").innerHTML = year + addDigit(99)
+      } else {
+        document.getElementById("prevMonth").innerHTML = year + addDigit(month - 1)
+      }
+      if (month + 1 === 13) {
+        document.getElementById("nextMonth").innerHTML = year + 1 + addDigit(1)
+      } else {
+        document.getElementById("nextMonth").innerHTML = year + addDigit(month + 1)
+      }
+
+      /*for (index = 0; index <= 41; ++index) {
+        document.getElementById("day[" + index + "]").className = "days"
+        document.getElementById("day[" + index + "]").innerHTML = counter
+
+        if (events.includes(concatDate(year, curMonth, counter))) {
+          addClass("day[" + index + "]", "eventDays")
+          document.getElementById("day[" + index + "]").setAttribute('onclick', "showEvent('" + concatDate(year, curMonth, counter) + "', 0)")
+        }
+
+        if (concatDate(today.getFullYear(), today.getMonth() + 1, today.getDate()) === concatDate(year, curMonth, counter)) {
+          addClass("day[" + index + "]", "today")
+        }
+
+        counter++
+
+        if (counter > getLastDay(year, month) && index < 15) {
+          counter = 1
+          curMonth = month
+        }
+        if (counter > getLastDay(year, month + 1) && index > 28) {
+          counter = 1
+          curMonth = month + 1
+        }
+      }*/
+      loadEvents(year, month)
+    }
+
+    function prevMonthClick() {
+      var year = document.getElementById("prevMonth").innerHTML.substr(0, 4)
+      var month = document.getElementById("prevMonth").innerHTML.substr(4, 2)
+      fillGrid(parseInt(year), parseInt(month))
+    }
+
+    function nextMonthClick() {
+      var year = document.getElementById("nextMonth").innerHTML.substr(0, 4)
+      var month = document.getElementById("nextMonth").innerHTML.substr(4, 2)
+      fillGrid(parseInt(year), parseInt(month))
+    }
+
+    function createCalendar(year, month, lang) {
+      drawHeader(lang)
+      drawGrid()
+      fillGrid(year, month)
+    }
+  </script>
+  <div>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </div>
+  <script>
+    createCalendar(0, 0, "fr")
+  </script>
+
+  <div id="eventViewer" class="eventBox">
+    <div style="height: 20px; text-align: right;"><a href="javascript:hideEvent()">X</a></div>
+    <div id="eventTitle" style="font-size: 18px; padding-left: 10px; width: 95%;"></div>
+    <div style="display: table; padding-top: 10px; width: 100%;">
+      <div style="padding-left: 10px; display: inline-block; width: 13%;"><b>Début: </b></div>
+      <div id="eventFrom" style="display: inline-block; width: 80%;"></div>
+    </div>
+    <div></div>
+    <div style="display: table; width: 100%;">
+      <div style="padding-left: 10px; display: inline-block; width: 13%;"><b>Fin: </b></div>
+      <div id="eventTo" style="display: inline-block; width: 80%;"></div>
+    </div>
+    <div id="eventDesc" style="text-align: justify; padding-left: 15px; padding-top: 10px; width: 90%;"></div>
+    <div id="pagechanger" style="padding-top: 10px; bottom: 0px; display: table; width: 100%; visibility: hidden;">
+      <div style="float: left; width: 15%; text-align: left; padding-left: 5px;"><a id="prevpage" href="">«</a></div>
+      <div id="pagesCount" style="float: left; width: 65%; text-align: center;">Event 1 of 2</div>
+      <div style="float: right; width: 15%; text-align: right; padding-right: 5px;"><a id="nextpage" href="">»</a>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <br><br>
+    <span style="color: darkred;"><b>Problème avec les événements de plusieurs jours. (Ex. 23 juin)</b></span><br>
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+  </div>
+
+</body>
+
+</html>

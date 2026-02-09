@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouveau travail enregistré</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+  <style>
+    .table {
+      display: table;
+      border: 1px Solid black;
+    }
+
+    .row {
+      display: table-row;
+    }
+
+    .cell {
+      display: table-cell;
+      border: 1px Solid black;
+    }
+  </style>
+
+  <script>
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  {{> siteHeader }}
+
+  <br><br><br><br>
+  Travail ajoutée!<br />
+  <br />
+  Client: {{{workItem.clientNumber}}}<br>
+  Description: {{{workItem.itemDesc}}}<br>
+  Date: {{{workItem.itemDate}}}<br>
+  Taux: {{{workItem.itemCost}}}<br>
+  Quantité: {{{workItem.itemQuantity}}}<br>
+  Facturé: {{{workItem.isBilled}}}<br>
+  Tâches:<br>
+  {{{listTasks workItem.tasks}}}
+  <br />
+  <form action="/newwork" method="GET">
+    <input type="submit" value="Entrer un nouveau travail">
+  </form>
+</body>
+
+</html>

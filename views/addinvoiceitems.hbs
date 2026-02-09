@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouvelle facture</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+
+  <script>
+    function validateForm() {
+      //alert("Test")
+      var formIsOk = true
+      //      if (document.getElementById("cNumber").value == "000") formIsOk = false
+      //      if (document.getElementById("invoiceNumber").value == "") formIsOk = false
+      //      if (document.getElementById("invoiceTerm").value == "") formIsOk = false
+      //      if (document.getElementById("dateDay").value == "") formIsOk = false
+      //      if (document.getElementById("dateMonth").value == "") formIsOk = false
+      //      if (document.getElementById("dateYear").value == "") formIsOk = false
+
+      if (formIsOk) {
+        //newbill.clientNumber.value = document.getElementById("cNumber").value
+        //newbill.invoiceDate.value = addDigit(newbill.dateDay.value) + "-" + addDigit(newbill.dateMonth.value) + "-" + newbill.dateYear.value
+        //alert("Formulaire accepté")
+        workItems.submit()
+      } else {
+        //alert("Erreur dans le formulaire!")
+      }
+
+      //alert(document.getElementById("clientNumber").value + " " + newbill.invoiceNumber.value + " " + newbill.invoiceTerm.value + " " + newbill.invoiceDate.value)
+    }
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  {{> siteHeader }}
+
+  <br><br><br><br><br><br>
+
+  <form action="/addinvoiceitem" name="workItems" method="post">
+    {{{ clientInfos.billingName }}}<br>
+    {{{ clientInfos.billingAddress }}}<br>
+    {{{ clientInfos.billingCity }}} ({{{ clientInfos.billingState }}})<br>
+    {{{ clientInfos.billingPostalCode }}}<br>
+    Client #: {{{ invoiceInfos.clientNumber }}}<br>
+    Facture #: {{{ invoiceInfos.invoiceNumber }}}<br>
+    Terme: {{{ invoiceInfos.invoiceTerm }}}<br>
+    Date : {{{ invoiceInfos.invoiceDate }}}<br>
+    <br>
+    <input type="hidden" name="invoiceID" id="invoiceID" value="{{{ invoiceInfos.invoiceID }}}">
+    <input type="text" name="test" id="test" size="5" value="jeteste">
+    {{{ workToBillList workToBill }}}
+    <input type="button" value="Envoyer" onclick="validateForm()">
+  </form>
+  <b>Créer un index unique autre que _id pour les items et utiliser à la place de _id</b>
+</body>
+
+</html>

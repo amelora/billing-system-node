@@ -1,0 +1,73 @@
+#taiMainbox {
+  position: relative;
+  top: 46px;
+  width: 100%;
+}
+
+#taiInnerBox1 {
+  display: table;
+  border: 0px Solid Black;
+  background-color: cadetblue;
+  min-height: 269px;
+}
+
+#taiMainBox2 {
+  display: table-cell;
+  width: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  text-align: top;
+  vertical-align: top;
+}
+
+#taiImgColumn {
+  display: table-cell;
+  padding: 20px;
+}
+
+#taiImageBox {
+  display: table-cell;
+  position: relative;
+}
+#taiImgContainers {
+  height: 159px;
+}
+
+.taiImgContainer {
+  visibility: hidden;
+}
+
+.taiSwapingImg {
+  position: absolute;
+  vertical-align: bottom;
+  width: 270px;
+  height: 159px;
+}
+
+#taiImgBtnContainer {
+  text-align: center;
+  width: 268px;
+  position: relative;
+  padding-top: 10px;
+}
+
+#taiSwapButton {
+  display: table-cell;
+  width: 12px;
+  height: 12px;
+  border: 1px Solid grey;
+  -webkit-border-radius: 100%;
+  -moz-border-radius: 100%;
+  border-radius: 100%;
+  background-color: #27727C;
+}
+
+#taiSpacer {
+  display: table-cell;
+  width: 15px;
+}
+
+.buttonsColor:hover {
+  background-color: #4CDEF1;
+}

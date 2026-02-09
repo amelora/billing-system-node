@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouvelle dépense</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+  <link href="https://code.jquery.com/ui/1.10.4/themes/excite-bike/jquery-ui.css" rel="stylesheet">
+  <script src="../src/frontFuncs.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <script src="/src/datepicker-fr-CA.js"></script>
+
+  <script>
+    // Définition de l'affichage du sélecteur de date
+    $(function () {
+      $.datepicker.setDefaults($.datepicker.regional['fr']);
+      $("#expenseDate").datepicker(
+        {
+          dateFormat: 'yy/mm/dd',
+          changeYear: true,
+        }
+      )
+    })
+
+    // Ajout d'un 0 pour les nombre < 10
+    function addDigit(number) {
+      console.log("num: " + number)
+      if (parseInt(number) < 10) {
+        return "0" + parseInt(number)
+      } else {
+        return parseInt(number).toString()
+      }
+    }
+
+    function removeTaxes() {
+      if (document.getElementById("expenseAmount").value === "" || document.getElementById("expenseAmount").value === undefined) {
+        var withTaxes = parseFloat(document.getElementById("totwithtax").value)
+        var beforeTaxes = Math.round((withTaxes / 1.14975) * 100) / 100
+        document.getElementById("expenseAmount").value = beforeTaxes
+        document.getElementById("expenseGST").value = Math.round((beforeTaxes * .05) * 100) / 100
+        document.getElementById("expensePST").value = Math.round((beforeTaxes * .09975) * 100) / 100
+      }
+    }
+
+    
+    function addTaxes() {
+      var beforeTaxes = parseFloat(document.getElementById("expenseAmount").value)
+      document.getElementById("expenseGST").value = Math.round((beforeTaxes * .05) * 100) / 100
+      document.getElementById("expensePST").value = Math.round((beforeTaxes * .09975) * 100) / 100
+    }
+
+    
+    function validateForm() {
+      //alert("Test")
+      var formIsOk = true
+      if (document.getElementById("expenseDesc").value == "") formIsOk = false
+      if (document.getElementById("expenseCategory").value == "") formIsOk = false
+      if (document.getElementById("expenseDate").value == "") formIsOk = false
+      if (document.getElementById("expenseAmount").value == "") formIsOk = false
+      if (document.getElementById("expenseGST").value == "") formIsOk = false
+      if (document.getElementById("expensePST").value == "") formIsOk = false
+
+      if (formIsOk) {
+        newexpense.submit()
+      } else {
+        alert("Erreur dans le formulaire!")
+      }
+
+      //alert(document.getElementById("clientNumber").value + " " + newbill.invoiceNumber.value + " " + newbill.invoiceTerm.value + " " + newbill.invoiceDate.value)
+    }
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  <br />
+  Nouvelle dépense<br />
+  <br />
+
+  <form action="/newexpense" name="newexpense" method="post">
+    <input type="hidden" name="expenseID" id="expenseID" value="{{expenseID}}">
+    Description: <input type="text" name="expenseDesc" id="expenseDesc" size="25" value=""><br />
+    Catégorie: <select name="expenseCategory" id="expenseCategory">
+      <option value="">Choisir</option>
+      <option value="Essence">Auto (Essence)</option>
+      <option value="Entretien">Auto (Entretien)</option>
+      <option value="AssAuto">Auto (Assurance)</option>
+      <option value="HQ">Maison (Électricité)</option>
+      <option value="Loyer">Maison (Loyer)</option>
+      <option value="AssMaison">Maison (Assurance)</option>
+      <option value="AssResp">Assurance Responsabilité (Assurance)</option>
+      <option value="AssGen">Assurance (Général)</option>
+      <option value="Internet">Internet</option>
+      <option value="Téléphone">Téléphone</option>
+      <option value="Équipement">Équipement</option>
+      <option value="Fourniture">Fourniture</option>
+      <option value="Divers">Divers</option>
+    </select><br />
+    Date: <input type="text" name="expenseDate" id="expenseDate" value="" size="6" autocomplete="off"><br />
+    Montant: <input type="text" name="expenseAmount" id="expenseAmount" size="3" value="" onblur="addTaxes()">
+    Taxé: <input type="text" name="totwithtax" id="totwithtax" size="3" value="" onblur="removeTaxes()"><br />
+    TPS: <input type="text" name="expenseGST" id="expenseGST" size="3" value=""><br />
+    TVQ: <input type="text" name="expensePST" id="expensePST" size="3" value=""><br />
+    <br />
+    <input type="button" value="Enregistrer" onclick="validateForm()">
+  </form>
+</body>
+
+</html>

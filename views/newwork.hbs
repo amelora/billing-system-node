@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Nouveau travail complété</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+  <link href="https://code.jquery.com/ui/1.10.4/themes/excite-bike/jquery-ui.css" rel="stylesheet">
+  <script src="../src/frontFuncs.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+  <script src="/src/datepicker-fr-CA.js"></script>
+
+  <style>
+    .ui-datepicker {
+      font-size: 8pt !important
+    }
+
+    .ui-datepicker-header {
+      color: rgb(20, 132, 230);
+    }
+
+    .table {
+      display: table;
+      border: 1px Solid black;
+    }
+
+    .row {
+      display: table-row;
+    }
+
+    .cell {
+      display: table-cell;
+      border: 1px Solid black;
+    }
+  </style>
+
+  <script>
+    // Définition de l'affichage du sélecteur de date
+    $(function () {
+      $.datepicker.setDefaults($.datepicker.regional['fr']);
+      $("#itemDate").datepicker(
+        {
+          dateFormat: 'yy/mm/dd',
+        }
+      )
+    })
+
+    
+    // Ajout d'un 0 pour les nombre < 10
+    function addDigit(number) {
+      console.log("num: " + number)
+      if (parseInt(number) < 10) {
+        return "0" + parseInt(number)
+      } else {
+        return parseInt(number).toString() //Doit peut-être enlever le parseInt (ajouté à cause erreur!)
+      }
+    }
+    var nbTasks = 0
+
+    
+    // Ajoute un champ supplémentaire pour ajouter une autre tâche
+    function addTaskField() {
+      nbTasks++
+      var container = document.getElementById("taskscontainer")
+      var label = document.createElement("div")
+      label.style = "display: inline-block; padding-top: 5px;"
+      label.innerHTML = "#" + nbTasks + ":&nbsp;"
+      var subcontainer = document.createElement("div")
+      subcontainer.style = "display: inline"
+      var input = document.createElement("input")
+      input.type = "text"
+      input.name = "task" + nbTasks
+      input.style = "width: 250px;"
+      container.appendChild(label);
+      container.appendChild(subcontainer);
+
+      subcontainer.appendChild(input);
+      container.appendChild(document.createElement("br"))
+      document.getElementById("nbtasks").value = nbTasks
+    }
+
+    
+    // Retire le dernier champ de tâche (Utile quand ajouté par erreur)
+    function removeTaskField() {
+      var container = document.getElementById("taskscontainer")
+      container.removeChild(container.lastChild)
+      container.removeChild(container.lastChild)
+      container.removeChild(container.lastChild)
+      nbTasks--
+      if (nbTasks < 0) nbTasks = 0
+      document.getElementById("nbtasks").value = nbTasks
+    }
+
+    
+    // Vérifie que tous les champs requis sont remplis
+    function validateForm() {
+      //alert("Test")
+      var formIsOk = true
+      if (document.getElementById("cNumber").value == "000") formIsOk = false
+      if (document.getElementById("itemDesc").value == "") formIsOk = false
+      if (document.getElementById("itemDate").value == "") formIsOk = false
+      if (document.getElementById("itemCost").value == "") formIsOk = false
+      if (document.getElementById("itemQuantity").value == "") formIsOk = false
+
+      if (formIsOk) {
+        newwork.clientNumber.value = document.getElementById("cNumber").value
+        alert("Formulaire accepté")
+        newwork.submit()
+      } else {
+        alert("Erreur dans le formulaire!")
+      }
+
+      //alert(document.getElementById("clientNumber").value + " " + newbill.invoiceNumber.value + " " + newbill.invoiceTerm.value + " " + newbill.invoiceDate.value)
+    }
+  </script>
+</head>
+
+<body style="padding-left: 10px;">
+  <br />
+  Nouveau travail complété<br />
+  <br />
+
+  {{{ clientSelector clientList }}}
+
+    <form action="/addwork" name="newwork" method="post">
+    <input type="hidden" name="clientNumber" id="clientNumber" value="">
+    <input type="hidden" name="workID" id="workID" value="{{workID}}">
+    <input type="hidden" name="nbtasks" id="nbtasks" value="">
+    Description: <input type="text" name="itemDesc" id="itemDesc" size="54" value=""><br>
+    Date: <input type="text" name="itemDate" id="itemDate" value="" autocomplete="off"><br>
+    Taux: <input type="text" name="itemCost" id="itemCost" size="1" value="45"><br>
+    Quantité: <input type="text" name="itemQuantity" id="itemQuantity" size="1" value="1"><br>
+    Facturé: <select name="isBilled">
+      <option value="false" selected='selected'>Non</option>
+      <option value="true">Oui</option>
+    </select><br />
+    Tâches: <input type="button" value="+" onclick="addTaskField()"> <input type="button" value="-"
+      onclick="removeTaskField()"><br />
+    <div id="taskscontainer">
+    </div>
+    <br>
+    <input type="button" value="Envoyer" onclick="validateForm()">
+  </form>
+</body>
+
+</html>

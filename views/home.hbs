@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Système de facturation</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="../src/functions.js"></script>
+</head>
+
+<body>
+  {{> siteHeader }}
+
+  <div style="padding-top: 55px;">
+    <iframe
+      id="appFrame"
+      name="appFrame"
+      src="/newwork"
+      style="width: 100%; height: calc(100vh - 55px); border: 0; background: whitesmoke;"
+    ></iframe>
+  </div>
+</body>
+</html>

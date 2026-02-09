@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Comptabilité</title>
+  <link rel="stylesheet" type="text/css" href="../src/main.css">
+
+  <script>
+    var siteaddress = "http://{{ siteaddr }}" + "/"
+    function changePage(newpage) {
+      location.href = siteaddress + newpage
+    }
+  </script>
+</head>
+
+<body>
+  {{> siteHeader }}
+
+  <br><br><br><br><br><br>
+  <input type="button" onclick="changePage('newinvoice')" value="Nouvelle facture">
+  <input type="button" onclick="changePage('newwork')" value="Nouveau travail complété">
+  <input type="button" onclick="changePage('newexpense')" value="Nouvelle dépense">
+</body>
+
+</html>
