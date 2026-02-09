@@ -52,6 +52,14 @@ At this stage, the application is intentionally single-language (French).
 
 ---
 
+## Configuration
+
+This project uses environment variables for local configuration.
+
+Copy `dev.env.example` to `dev.env` and adjust values for your local environment.
+
+--
+
 ## Design choices
 
 - PDF invoices are generated **once** and streamed simultaneously to:
